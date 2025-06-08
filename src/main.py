@@ -51,6 +51,6 @@ def main(page: ft.Page):
 
     page.on_route_change = route_change
     page.on_view_pop = view_pop # Adicione este manipulador
-    page.go("/home") # Inicia na rota home
+    page.go("/login") # Inicia na rota home
 
 ft.app(target=main) # Use 'target' para main
