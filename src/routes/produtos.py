@@ -64,7 +64,7 @@ def View(page: ft.Page):
         )
 
     def atualizar_lista():
-        #tabela.rows.clear()
+        tabela.rows.clear()
         #for i, p in enumerate(produtos):
         #    tabela.rows.append(criar_linha_tabela(i, p))
         #page.update()
