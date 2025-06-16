@@ -3,8 +3,10 @@ import flet as ft
 import datetime
 import asyncio
 from data import clientes, produtos, vendas  # importa os dados reais
+from managers.storage_manager import StorageManager
 
 def View(page: ft.Page):
+    storage = StorageManager(page)
     drawer_open = False
 
     nome_empresa = ft.Text(
@@ -12,6 +14,14 @@ def View(page: ft.Page):
         size=16,
         weight=ft.FontWeight.BOLD,
     )
+
+    theme_mode = storage.get_theme_mode()
+    if theme_mode == "dark":
+        page.theme_mode = ft.ThemeMode.DARK
+        page.bgcolor = ft.Colors.BLACK
+    else:
+        page.theme_mode = ft.ThemeMode.LIGHT
+        page.bgcolor = ft.Colors.WHITE
 
     # Botão de tema que será atualizado dinamicamente
     botao_tema = ft.IconButton(
@@ -27,12 +37,14 @@ def View(page: ft.Page):
             appbar.bgcolor = ft.Colors.GREEN_900
             botao_tema.icon = ft.Icons.DARK_MODE
             botao_tema.tooltip = "Alternar para modo escuro"
+            storage.set_theme_mode("light")
         else:
             page.theme_mode = ft.ThemeMode.DARK
             page.bgcolor = ft.Colors.BLACK
             appbar.bgcolor = ft.Colors.GREEN_800
             botao_tema.icon = ft.Icons.LIGHT_MODE
             botao_tema.tooltip = "Alternar para modo claro"
+            storage.set_theme_mode("dark")
         page.update()
 
     # Configura o evento do botão tema
@@ -45,6 +57,7 @@ def View(page: ft.Page):
         nonlocal drawer_open
         drawer_open = False
         menu_container.visible = False
+        storage.logout()
         page.update()
         page.go("/login")
 
@@ -127,6 +140,13 @@ def View(page: ft.Page):
         while True:
             atualizar_hora()
             await asyncio.sleep(1)
+
+    def atualizar_nome_empresa():
+        nome_empresa.value = storage.get_empresa_name()
+        page.update()
+
+    # Event listener para mudanças no storage (simulado)
+    page.client_storage.set("update_empresa_callback", atualizar_nome_empresa)
 
     total_vendas = sum(venda["total"] for venda in vendas) if vendas else 0.0
     total_clientes = len(clientes)
